@@ -4,22 +4,41 @@ using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
+    public GameObject item;
     public Transform theDest;
-
+    public float throwSpeed;
+    float distance;
     void Update()
     {
+        distance = Vector3.Distance(item.transform.position, theDest.transform.position);
+
         if (Input.GetKeyDown(KeyCode.E))
         {
-            GetComponent<BoxCollider>().enabled = false;
-            GetComponent<Rigidbody>().useGravity = false;
-            this.transform.position = theDest.position;
-            this.transform.parent = GameObject.Find("Destination").transform;
+            Grab();
         }
         if (Input.GetKeyDown(KeyCode.F))
         {
-            this.transform.parent = null;
-            GetComponent<Rigidbody>().useGravity = true;
-            GetComponent<BoxCollider>().enabled = true;
+            Drop();
         }
+    }
+
+    void Grab()
+    {
+        if(distance <= 2f)
+        {
+            GetComponent<BoxCollider>().enabled = false;
+            GetComponent<Rigidbody>().useGravity = false;
+            item.transform.position = theDest.position;
+            item.transform.parent = GameObject.Find("Destination").transform;
+            item.transform.rotation = transform.parent.rotation;
+        }
+    }
+
+    void Drop()
+    {
+        item.transform.parent = null;
+        GetComponent<Rigidbody>().AddForce(theDest.forward * throwSpeed);
+        GetComponent<Rigidbody>().useGravity = true;
+        GetComponent<BoxCollider>().enabled = true;
     }
 }
